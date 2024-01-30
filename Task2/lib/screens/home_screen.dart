@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:quotes/providers/universal_provider.dart';
 import 'package:quotes/widgets/quote_card.dart';
@@ -21,11 +22,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, 'favourites'),
-            icon: const Icon(
-              Icons.favorite,
-              color: Colors.deepPurple,
+          Padding(
+            padding: EdgeInsets.only(right: 8.0.w),
+            child: IconButton(
+              onPressed: () => Navigator.pushNamed(context, 'favourites'),
+              icon: const Icon(
+                Icons.favorite_outline_rounded,
+                color: Colors.deepPurple,
+              ),
             ),
           )
         ],
@@ -36,10 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
             universalProvider.todaysQuote == null
                 ? const Center(
                     child: CircularProgressIndicator(
-                    color: Colors.deepPurple,
-                  ))
+                      color: Colors.deepPurple,
+                    ),
+                  )
                 : Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
                     child: QuoteCard(
                       quoteModel: universalProvider.todaysQuote!,
                     ),

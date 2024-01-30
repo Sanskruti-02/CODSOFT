@@ -7,24 +7,21 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:quotes/models/quote_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:quotes/widgets/snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UniversalProvider extends ChangeNotifier {
   DateTime? _lastFetchTime;
 
-  List<QuoteModel>? _bookmarkedQuotsModels;
-  List<QuoteModel>? get bookmarkedQuotsModels => _bookmarkedQuotsModels;
+  List<QuoteModel> _favouriteQuotsModels = [];
+  List<QuoteModel> get favouriteQuotsModels => _favouriteQuotsModels;
 
   QuoteModel? _todaysQuote;
   QuoteModel? get todaysQuote => _todaysQuote;
 
   UniversalProvider() {
-    initialize();
-    // _todaysQuote = QuoteModel(
-    //     quote:
-    //         'Everyone here has the sense that right now is one of those moments when we are influencing the future.',
-    //     author: 'Steve Jobs',
-    //     category: 'insp');
+    _initialize();
+    _loadFavourites();
   }
 
   final List<String> _categories = [
@@ -42,7 +39,37 @@ class UniversalProvider extends ChangeNotifier {
     'courage',
   ];
 
-  Future<void> initialize() async {
+  Future<void> _loadFavourites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final tmp = prefs.getString('favouriteQuots');
+    if (tmp != null) {
+      List<dynamic> decodedObj = jsonDecode(tmp);
+      _favouriteQuotsModels =
+          decodedObj.map((e) => QuoteModel.fromJson(e)).toList();
+      notifyListeners();
+    }
+  }
+
+  Future<void> addToFavourites(
+      QuoteModel quoteModel, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    _favouriteQuotsModels.add(quoteModel);
+    prefs.setString('favouriteQuots', jsonEncode(_favouriteQuotsModels));
+    showSnackBar(context, 'Added to favourites!');
+    notifyListeners();
+  }
+
+  Future<void> removeFromFavourites(
+      QuoteModel quoteModel, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    _favouriteQuotsModels.removeAt(_favouriteQuotsModels
+        .indexWhere((element) => element.quote == quoteModel.quote));
+    prefs.setString('favouriteQuots', jsonEncode(_favouriteQuotsModels));
+    showSnackBar(context, 'Removed from favourites!');
+    notifyListeners();
+  }
+
+  Future<void> _initialize() async {
     final prefs = await SharedPreferences.getInstance();
     final lastFetchTime = prefs.getInt('lastFetchTime');
     _lastFetchTime = lastFetchTime != null
