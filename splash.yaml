@@ -1,0 +1,16 @@
+flutter_native_splash:
+
+  color: "#673AB7"
+  image_android: assets/appicon.png
+  image: assets/appicon.png
+  image_dark: assets/appicon.png
+
+  android_12:
+    color_android: "#673AB7"
+    color: "#673AB7"
+    color_dark: "#673AB7"
+    image_android: assets/appicon.png
+    image: assets/appicon.png
+    image_dark: assets/appicon.png
+
+  web: false
